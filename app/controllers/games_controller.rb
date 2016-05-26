@@ -1,41 +1,44 @@
 class GamesController < ApplicationController
-  def new
-  end
+  
 
   def create
    ## session[:username] = params[:username]
    ##@player=Player.find_or_create_by(username: params[:username])
-session[:username] = params[:username]
-@player=Player.find_or_create_by(username: params[:username])
-@player.score=0
-session[:user_id] = @player.id
+
+      #this is so hacky and needs to be improved
+       #this could have come from a logged in user or a guest
+    #guest
+        if !is_member? && params[:username]
+            @player=Player.create(username: params[:username])
+            session[:user_id] = @player.id
+
+    #member
+        elsif is_member?
+            @player=Player.find(session[:user_id])
+        end
 
 
-@game=Game.create()
-session[:game_id]=@game.id
-@game.players << @player # shovel all the player into the game that they specify
-@player.starting_hand
+    #both
+    @player.score=0
+    @game=Game.create()
+    session[:game_id]=@game.id
+    @game.players << @player # shovel all the player into the game that they specify
+    @player.starting_hand
+    
 
-round1 = Round.create(game_round: 1, game: @game, judge: @player)
-round1.get_random_prompt
 
-round2 = Round.create(game_round: 2, game: @game)
-round2.get_random_prompt
 
-round3 = Round.create(game_round: 3, game: @game)
-round3.get_random_prompt
+10.times do |i|
 
-round4 = Round.create(game_round: 4, game: @game)
-round4.get_random_prompt
+  Round.create(game_round: i, game: @game, judge: @player).get_random_prompt if i==1
+  Round.create(game_round: i, game: @game).get_random_prompt if i>1
 
-round5 = Round.create(game_round: 5, game: @game)
-round5.get_random_prompt
+end
 
-round6 = Round.create(game_round: 6, game: @game)
-round6.get_random_prompt
 
-round7 = Round.create(game_round: 7, game: @game)
-round7.get_random_prompt
+@game.rounds.first.judge = @game.players.first
+@game.rounds.first.save
+
 
 
 

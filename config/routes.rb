@@ -8,7 +8,9 @@ Rails.application.routes.draw do
     resources :selections, only: :create
   end
   resources :players, only: [:index,:create]
-  resources :sessions, only: [:create]
+  resources :sessions, only: [:create, :destroy]
+    get 'logout', to: 'sessions#logout'
+  resources :members , only: [:create]
 
   # Serve websocket cable requests in-process
   mount ActionCable.server => '/cable'
