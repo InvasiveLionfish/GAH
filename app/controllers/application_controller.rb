@@ -8,9 +8,9 @@ class ApplicationController < ActionController::Base
   def is_member?
     if is_logged_in?
       begin
-      return Player.find(session[:user_id]).type=="Member" 
+      return Player.find(session[:user_id]).type=="Member"
       rescue ActiveRecord::RecordNotFound => whatamI
-        binding.pry
+        # binding.pry
         return false
       end
     else false
